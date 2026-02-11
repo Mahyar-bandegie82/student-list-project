@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { getStudents, uploadExcel } from "../services/studentService";
+import AddStudentForm from "../components/AddStudentForm";
+import { deleteStudent, updateStudent } from "../services/studentService";
+import { logoutTeacher } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const [students, setStudents] = useState([]);
@@ -36,9 +40,56 @@ function Dashboard() {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!confirm("Delete this student?")) return;
+
+    try {
+      await deleteStudent(id);
+      fetchStudents();
+    } catch {
+      alert("Delete failed");
+    }
+  };
+
+  const handleEdit = async (student) => {
+    const first_name = prompt("First name:", student.first_name);
+    const last_name = prompt("Last name:", student.last_name);
+    const phone = prompt("Phone:", student.phone || "");
+
+    if (!first_name || !last_name) return;
+
+    try {
+      await updateStudent(student.id, {
+        student_code: student.student_code,
+        first_name,
+        last_name,
+        phone,
+        latitude: student.latitude,
+        longitude: student.longitude,
+      });
+
+      fetchStudents();
+    } catch {
+      alert("Update failed");
+    }
+  };
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logoutTeacher();
+    navigate("/login");
+  };
+
   return (
-    <div style={{ padding: 40 }}>
+    <div className="container">
       <h2>Teacher Dashboard</h2>
+      <button className="btn-secondary" onClick={handleLogout}>Logout</button>
+
+      <br />
+      <br />
+
+      <AddStudentForm onStudentCreated={fetchStudents} />
 
       {/* Excel Upload */}
       <h3>Upload Students Excel</h3>
@@ -48,8 +99,9 @@ function Dashboard() {
           accept=".xlsx,.xls"
           onChange={(e) => setFile(e.target.files[0])}
         />
-        <br /><br />
-        <button type="submit">Upload</button>
+        <br />
+        <br />
+        <button className="upload-btn" type="submit">Upload</button>
       </form>
 
       <p>{message}</p>
@@ -68,6 +120,7 @@ function Dashboard() {
             <th>Image</th>
             <th>Latitude</th>
             <th>Longitude</th>
+            <th>Actions</th>
           </tr>
         </thead>
 
@@ -75,20 +128,32 @@ function Dashboard() {
           {students.map((student) => (
             <tr key={student.id}>
               <td>{student.id}</td>
-              <td>{student.student_code}</td>
-              <td>{student.first_name}</td>
-              <td>{student.last_name}</td>
-              <td>{student.phone || "-"}</td>
+              <td className="student-code">{student.student_code}</td>
+              <td className="first-name">{student.first_name}</td>
+              <td className="last-name">{student.last_name}</td>
+              <td className="location">{student.phone || "-"}</td>
               <td>
-                {student.image ? (
+                {student.image && (
                   <img
                     src={`http://127.0.0.1:8000${student.image}`}
                     width="60"
                   />
-                ) : "No Image"}
+                )}
               </td>
-              <td>{student.latitude ?? "-"}</td>
-              <td>{student.longitude ?? "-"}</td>
+              <td>
+                {student.latitude && student.longitude
+                  ? `${student.latitude}`
+                  : "No location"}
+              </td>
+              <td>
+                {student.latitude && student.longitude
+                  ? `${student.longitude}`
+                  : "No location"}
+              </td>
+              <td style={{display : "flex"}}>
+                <button className="btn-primary" onClick={() => handleEdit(student)}>Edit</button>
+                <button className="btn-danger" onClick={() => handleDelete(student.id)}>Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>

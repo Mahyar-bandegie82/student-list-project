@@ -43,3 +43,8 @@ export const signupTeacher = async (formData) => {
 
   return response.json();
 };
+
+export function logoutTeacher() {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+}

@@ -23,7 +23,7 @@ function Login() {
   };
 
   return (
-    <div style={{ padding: 40 }}>
+    <div className="container">
       <h2>Teacher Login</h2>
 
       <form onSubmit={handleSubmit}>
@@ -44,7 +44,7 @@ function Login() {
         <br />
         <br />
 
-        <button type="submit">Login</button>
+        <button className="btn-primary" type="submit">Login</button>
       </form>
 
       <p>{message}</p>
