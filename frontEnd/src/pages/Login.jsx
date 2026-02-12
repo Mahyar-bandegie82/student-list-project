@@ -44,8 +44,13 @@ function Login() {
         <br />
         <br />
 
-        <button className="btn-primary" type="submit">Login</button>
+        <button className="btn-primary" type="submit">
+          Login
+        </button>
       </form>
+      <p>
+        Don't have an account? <a style={{color : "chartreuse"}} href="/signup">Sign up</a>
+      </p>
 
       <p>{message}</p>
     </div>

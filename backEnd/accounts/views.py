@@ -10,11 +10,16 @@ from .serializers import (
     RecoveryQuestionSerializer,
     PasswordResetSerializer,
 )
-
+from .models import Teacher
 from .serializers import TeacherSignupSerializer, TeacherLoginSerializer
 
 Teacher = get_user_model()
 
+
+@api_view(["GET"])
+def teacher_list(request):
+    teachers = Teacher.objects.values("id", "username")
+    return Response(list(teachers))
 
 @api_view(["POST"])
 @permission_classes([AllowAny])

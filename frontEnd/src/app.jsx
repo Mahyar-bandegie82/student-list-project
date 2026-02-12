@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Signup from "./pages/Signup";
+
 
 export default function App() {
   return (
@@ -19,7 +21,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route path="/signup" element={<Signup />} />
         {/* Redirect / to /login */}
         <Route path="/" element={<Login />} />
       </Routes>
